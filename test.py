@@ -15,8 +15,8 @@ if __name__ == '__main__':
                           current_tablename='UNNAMED')
                 print(datetime.now())
                 for record in tps:
-                    # print(record)
-                    pass
+                    print(record)
+                    #pass
 
     print(datetime.now())
 

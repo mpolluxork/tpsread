@@ -79,12 +79,14 @@ class TPS:
                 warn('File size is not a multiple of 64 bytes.', RuntimeWarning)
 
         with open(self.filename, mode='r+b') as tpsfile:
-            self.tps_file = mmap.mmap(tpsfile.fileno(), 0)
+            print(tpsfile.name, tpsfile.fileno(), self.file_size)
+            self.tps_file = mmap.mmap(tpsfile.fileno(), 0,mmap.MAP_PRIVATE)
 
             self.decryptor = decryptor_class(self.tps_file, self.password)
 
             try:
                 # TPS file header
+                print("creando el header...")
                 header = Struct('header',
                                 ULInt32('offset'),
                                 ULInt16('size'),
@@ -96,10 +98,13 @@ class TPS:
                                 ULInt32('page_root_ref'),
                                 Array(lambda ctx: (ctx['size'] - 0x20) / 2 / 4, ULInt32('block_start_ref')),
                                 Array(lambda ctx: (ctx['size'] - 0x20) / 2 / 4, ULInt32('block_end_ref')), )
-
+                print("leyendo el header...")
                 self.header = header.parse(self.read(0x200))
+                print("creando lista de páginas..")
                 self.pages = TpsPagesList(self, self.header.page_root_ref, check=self.check)
+                print("creando lista de tablas...")
                 self.tables = TpsTablesList(self, encoding=self.encoding, check=self.check)
+                print("estableciendo tabla actual...")
                 self.set_current_table(current_tablename)
             except adapters.ConstError:
                 print('Bad cryptographic keys.')

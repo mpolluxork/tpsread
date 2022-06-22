@@ -66,9 +66,10 @@ class TpsPagesList:
         self.__pages = {}
 
         self.__add(self.root_page_ref, check=self.check)
-
+        pags=0
         for current_page_ref in self.__generator(self.root_page_ref):
-
+            pags+=1
+            print("añadiendo paginas...",pags)
             if self.__pages[current_page_ref].hierarchy_level != 0:
                 # Control page
                 for child_page_ref in self.__pages[current_page_ref].children:
